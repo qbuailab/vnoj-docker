@@ -15,8 +15,8 @@ services:
     image: redis:alpine
     restart: unless-stopped
     networks: [site]
-    #ports:
-    #  - 6379:6379
+    ports:
+      - 6379:6379
   base:
     build:
       context: .
@@ -91,16 +91,17 @@ services:
     env_file: [environment/mysql.env, environment/site.env]
     networks: [site, nginx]
     depends_on: [base]
-    #ports:
-    #  - 15100:15100
-    #  - 15101:15101
-    #  - 15102:15102
+    ports:
+      - 15100:15100
+      - 15101:15101
+      - 15102:15102
   nginx:
     container_name: vnoj_nginx
     image: nginx:alpine
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
       - assets:/assets/
       - userdatacache:/userdatacache/
@@ -108,8 +109,17 @@ services:
       - cache:/cache/
       - ./media/:/media/
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     networks: [nginx]
     depends_on: [site, wsevent]
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 networks:
   site:
   db:

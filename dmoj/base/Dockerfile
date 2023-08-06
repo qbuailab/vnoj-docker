@@ -1,3 +1,4 @@
+
 FROM python:3.11-slim-bullseye
 
 RUN apt-get update && \
@@ -5,7 +6,7 @@ RUN apt-get update && \
         git gcc g++ make curl gettext wget \
         libxml2-dev libxslt1-dev zlib1g-dev \
         mariadb-client libmariadb-dev \
-        libjpeg-dev debconf-utils && \
+        libjpeg-dev debconf-utils pkg-config && \
     curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -y nodejs && \
     apt-get autoremove -y && \
@@ -14,5 +15,5 @@ RUN apt-get update && \
 COPY repo/requirements.txt .
 COPY repo/additional_requirements.txt .
 RUN npm install -g sass postcss-cli postcss autoprefixer && \
-    pip3 install -r requirements.txt && \
-    pip3 install -r additional_requirements.txt
+    pip3 install --no-cache-dir -r requirements.txt && \
+    pip3 install --no-cache-dir -r additional_requirements.txt
