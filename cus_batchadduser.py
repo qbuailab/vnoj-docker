@@ -47,7 +47,7 @@ class Command(BaseCommand):
             username = row['username']
             fullname = row['fullname']
             about = row['about']
-            password = "Qbuoj@1234"
+            password = "QbuOJ@1234"
 
             add_user(username, fullname, password, about, [organization])
 
