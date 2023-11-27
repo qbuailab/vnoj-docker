@@ -34,6 +34,7 @@ class Command(BaseCommand):
         parser.add_argument('input', help='csv file containing username, fullname, and about information')
         parser.add_argument('orgid', help='id of organization.')
         parser.add_argument('output', help='where to store output csv file')
+        parser.add_argument('password', help='Password for all users. Default: dhqb1234', default='dhqb1234')
 
     def handle(self, *args, **options):
         fin = open(options['input'], 'r')
@@ -42,12 +43,12 @@ class Command(BaseCommand):
         reader = csv.DictReader(fin)
         writer = csv.DictWriter(fout, fieldnames=['username', 'fullname', 'about', 'password'])
         writer.writeheader()
+        password = options['password'] if options['password'] else "dhqb1234"
 
         for row in reader:
             username = row['username']
             fullname = row['fullname']
             about = row['about']
-            password = "QbuOJ@1234"
 
             add_user(username, fullname, password, about, [organization])
 
@@ -60,3 +61,4 @@ class Command(BaseCommand):
 
         fin.close()
         fout.close()
+
